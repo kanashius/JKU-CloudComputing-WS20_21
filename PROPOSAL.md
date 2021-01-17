@@ -23,6 +23,8 @@ Stefan Paukner (k11808822)
 ## Objectives - Goal of the Project
 
 Demo: Implement a demo using Flux for versioning your applied configuration
+Comparision between Flux and ArgoCD 
+Implementing a Review Process for the PullRequests in GitHub 
 
 ## Tech stack
 
@@ -39,11 +41,21 @@ Demo: Implement a demo using Flux for versioning your applied configuration
 ## General steps
 
 1. Set up an github account
-2. Set up 2 different kubernetes clusters to represent 2 different stages like stage and production environment
-3. Install the flux 
-4. To enable the GitFlow we will try to use the existing repository (or maybe create a new one with the new github account) to manage the clusters
-5. Then we will configure the clusters to synchronise with a directory in the repository
-6. Register app sources that contain plain Kubernetes manifests or Kustomize overlays
-7. Configure app deployments on both clusters (staging and production)
-8. To test if our configuration works we would like to change the opened ports at one cluster to see, if these changes are applied correctly
+1. Set up 2 different kubernetes clusters to represent 2 different stages like stage and production environment
+1. Install the flux 
+1. To enable the GitFlow we will try to use the existing repository (or maybe create a new one with the new github account) to manage the clusters
+1. Then we will configure the clusters to synchronise with a directory in the repository
+1. Register app sources that contain plain Kubernetes manifests or Kustomize overlays
+1. Configure app deployments on both clusters (staging and production)
+1. To test if our configuration works we would like to change the number of replicas of an pod to see, if these changes are applied correctly
+1. Configure the review process with a test tool to verify the syntax of the configuration yaml files
+
+## Responsibilities
+Patrik Nolte: Comparison, github review process  
+Phung-Dong Kulcsar : Flux setup on googlecloud, setup fleet-repo   
+Stefan Paukner: Flux setup on azure cluster, setup fleet-repo with 2nd stage 
+
+
+
+
 
