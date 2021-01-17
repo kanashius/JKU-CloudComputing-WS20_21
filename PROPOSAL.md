@@ -22,7 +22,7 @@ Stefan Paukner (k11808822)
 
 ## Objectives - Goal of the Project
 
-Demo: Implement a demo using Flux for versioning your applied configuration
+Demo: Implement a demo using Flux for versioning your applied configuration 
 Comparision between Flux and ArgoCD 
 Implementing a Review Process for the PullRequests in GitHub 
 
