@@ -220,6 +220,12 @@ Webhooks can be used to notify other tools that changes to the repository were m
 | Watches								| User stars a repository. |
 | Wiki									| Wiki page updated. |
 
+### Result of the implementation of the webhook
+I created a php page, where the requests of the webhook are send. This page stored them in a textfile. Another file is used to display the results.<br>
+I removed the webpage for receiving notifications because of security reasons, but the page showing the results is available here:<br>
+[Some Webrequest data](http://kanashius.ddns.net/cloudComputingJKU/cloudComputingJKU.php)<br>
+The data send to the website could be used to trigger other actions at the server.
+
 ## Notifications
 Enable email notifications for push events, sending an email to one or more email addresses.
 
