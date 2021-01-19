@@ -105,6 +105,117 @@ kubectl port-forward -n staging service/staging-demoapp-devops-toolkit 8081:80
 kubectl port-forward service/podinfo 8080:9898   
 ![](./images/podinfo_screenshot.jpg "Screenshot poinfoapp")
 
+# Comparison Argo CD vs. Flux v2
+## Basic functionality
+The Basic functionality is the same. Both ArgoCD and Flux provide tools to connect to git repositories and sync the content with kubernetes clusters in a declarative way.
+<br>The main difference between them is Flux allowing only to connect one repository per instance of Flux operator. ArgoCD on the other hand can connect multiple git repositories to one cluster.
+<br>Multiple git repositories at one cluster are useful if multiple teams provide manifests for Kubernetes or if the application manifests should be stored together with the application code.
+
+| Flux: | Argo CD: |
+| ----- | -------- |
+|![alt text](./images/fluxFLow.png "Flux flow")|![alt text](./images/argoCDFLow.png "ArgoCD flow")|
 
 
 
+## Clusters
+The next difference is Flux working only inside the cluster like a typical Kubernetes Operator, managing only one cluster effectively. Meanwhile ArgoCD can manage multiple clusters with one instance, providing one centralized tool to manage all clusters from one place. It can sync the cluster it is running on as well as external clusters.
+
+## GUI
+Another big difference is ArgoCD providing a very nice graphical user interface to simplify monitoring the state of all applications. This includes the current state of the synchronization and the virtualisation of relations between objects in the app manifests.
+<br>Flux on the other hand does not provide any graphical user interface. Instead there only exists an integration into the (paid) Weavework SaaS services.
+
+## Enterprise readiness
+If you plan to use one of the tools in enterprise solutions, ArgoCD may be the first choice. It features Single-Sign-On as well as builtin support for role based access control whereas Flux is limited to the Kubernetes role based access control, because it is just a controller.
+
+## Manifest generation
+ArgoCD and Flux both have the possibility to generate manifests, but ArgoCD includes more builtin support for tools like kustomize, helm and ksonnet. Own tools can be plugged into both.
+
+## Updating container images
+Where Flux shines is updating the container images automatically. This way, less critical containers can be updated to revision versions, without doing it manually. In ArgoCD the changes have to be committed to the git repository in order to update the container image.
+
+## Argo FLux
+Recently both tools joined together. They want to provide a single and best-in-class tool-chain for GitOps as well as a global-scale reference architecture for GitOps. The engineering resources to address issues and feature requests is doubled. The main advantage is the new Argo Flux dashboard joining the advantages of both tools. This way workflows and events will be used that leverage the beneficial features of Argo CD and Flux CD.
+<br>In the process of merging the tools, the GitOps Engine will be created. It is used to share common components and provide backwards-compatibility for both Argo CD and Flux CD. It will manage the access to git repositories, Kubernetes resource caches, manifest generation, resource reconciliation and sync planning.
+
+## Future steps of the Argo Flux project
+* More efficient syncing
+* Reduction of cluster API calls and etcd traffic
+* Increased syncing frequency
+* Advanced syncing features, including pre-post sync hooks and sync waves
+* Overall performance and efficiency improvements
+
+# Gitops tools included in Github
+Additional to the tools named below, it is possible to enable other integrations, manage keys for deployment, setup artifact and log retention, setup environments and manage secrets for accessing actions and codespaces and set temporary interaction limits.
+
+## Github Review Process
+To enforce a review process for pull requests, branch protection rules need to be added. These rules can target specific branches or can match branches with a defined pattern. For all branches matching the specified pattern, the following rules can be applied:
+
+* Require pull request reviews before merging (Including the number of required approvals)
+  * Dismiss stale pull request approvals when new commits are pushed 
+  * Require review from Code Owners 
+* Require status checks to pass before merging 
+  * Require branches to be up to date before merging 
+  * Select Status checks that are required
+* Require signed commits 
+* Require linear history 
+* Include administrators 
+* Allow force pushes (Permit force pushes for all users with push access.)
+* Allow deletions (Allow users with push access to delete matching branches. )
+
+To test the review process, I created the pattern “main” to apply the rule to our main branch. I enforced that at least one person needs to approve the pull request. Additionally I checked that the rule includes administrators, because I am an administrator of the repository and could not test the rule if it does not apply to me.
+<br>After creating the rule, it is not possible to push to the main branch without at least one approval of my team members.
+<br>In the Settings->Options tab it is possible to allow auto-merge. In this case, pull requests with the needed approval are merged automatically. I enabled this option together with automatically deleting head branches after the pull request is merged.
+
+### Result of the implementation of the request approval
+![alt text](./images/GithubReview.png "Flux flow")
+
+## Webhooks
+Webhooks can be used to notify other tools that changes to the repository were made. This is done with POST requests to defined urls. It can be send as JSON or x-www-form-urlencoded and may contain a secret.
+<br>The type of Event can be defined, too. Available options are just push events, everything or the manual selection of the events.
+
+| Event                                 | Description            |
+| ------------------------------------- | ---------------------- |
+| Branch or tag creation				| Branch or tag created. |
+| Branch or tag deletion				| Branch or tag deleted. |
+| Check runs							| Check run is created, requested, rerequested, or completed. |
+| Check suites							| Check suite is requested, rerequested, or completed. |
+| Code scanning alerts					| Code Scanning alert created, fixed in branch, or closed |
+| Collaborator add, remove, or changed	| Collaborator added to, removed from, or has changed permissions for a repository. |
+| Commit comments						| Commit or diff commented on. |
+| Deploy keys							| A deploy key is created or deleted from a repository. |
+| Deployment statuses					| Deployment status updated from the API. |
+| Deployments							| Repository was deployed or a deployment was deleted. |
+| Forks									| Repository forked. |
+| Issue comments						| Issue comment created, edited, or deleted. |
+| Issues								| Issue opened, edited, deleted, transferred, pinned, unpinned, closed, reopened, assigned, unassigned, labeled, unlabeled, milestoned, demilestoned, locked, or unlocked. |
+| Labels								| Label created, edited or deleted. |
+| Meta									| This particular hook is deleted. |
+| Milestones							| Milestone created, closed, opened, edited, or deleted. |
+| Package v2s							| GitHub Packages published or updated in a repository. |
+| Packages								| GitHub Packages published or updated in a repository. |
+| Page builds							| Pages site built. |
+| Project cards							| Project card created, updated, or deleted. |
+| Project columns						| Project column created, updated, moved or deleted. |
+| Projects								| Project created, updated, or deleted. |
+| Pull request review comments			| Pull request diff comment created, edited, or deleted. |
+| Pull request reviews					| Pull request review submitted, edited, or dismissed. |
+| Pull requests							| Pull request opened, closed, reopened, edited, assigned, unassigned, review requested, review request removed, labeled, unlabeled, synchronized, ready for review, converted to draft, locked, unlocked, auto merge enabled, or auto merge disabled. |
+| Pushes								| Git push to a repository. |
+| Registry packages						| Registry package published or updated in a repository. |
+| Releases								| Release created, edited, published, unpublished, or deleted. |
+| Repositories							| Repository created, deleted, archived, unarchived, publicized, privatized, edited, renamed, or transferred. |
+| Repository imports					| Repository import succeeded, failed, or cancelled. |
+| Repository vulnerability alerts		| Security alert created, resolved, or dismissed on a repository. |
+| Secret scanning alerts				| Secrets scanning alert created, resolved, or reopened |
+| Stars									| A star is created or deleted from a repository. |
+| Statuses								| Commit status updated from the API. |
+| Team adds								| Team added or modified on a repository. |
+| Visibility changes					| Repository changes from private to public. |
+| Watches								| User stars a repository. |
+| Wiki									| Wiki page updated. |
+
+## Notifications
+Enable email notifications for push events, sending an email to one or more email addresses.
+
+## Actions
+Another tool are Actions. They are used for automated builds, tests and deployment. It can be defined, who can execute actions and self-hosted runners to execute the actions can be added.
