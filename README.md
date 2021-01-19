@@ -12,6 +12,8 @@ https://github.com/paust/stage.git
 https://github.com/paust/podinfo.git   
 https://github.com/vfarcic/devops-toolkit.git  
 
+## overview
+![](./images/cc.svg "Running Pods podinfo") 
 
 ## Fleet repo  
 
@@ -57,11 +59,15 @@ The podinfo configuration path:
 
 # Bootstrapping  
 
-flux bootstrap github 
-	--owner=$GITHUB_USER --repository=fleet
-	--branch=main 
-	--path=./clusters/stage
-results in 
+flux bootstrap github  
+	--owner=$GITHUB_USER --repository=fleet  
+	--branch=main   
+	--path=./clusters/stage    
+
+    
+results in  
+
+
 ![no Pictures available](./images/bootstrap.jpg "Bootstrapping process")
 
 ## Testing the results 
