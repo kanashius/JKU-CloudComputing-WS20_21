@@ -38,6 +38,41 @@ The devops-toolkit is versioned using helm charts. Which versioin sould be appli
 ### podinfo
  The podinfo applications uses Kustomizations to configure the cluster. The configuration files and the source files are in the same repo. So configuration and the application can not be modified independently. For eg using version 1.2 for the app and version 1.5 for the configuration.... 
 
+## Creating your own Helm chart repository
+A chart repository consists of packaged charts and a special file called `index.yaml` which contains an index of all of the charts in the repository. Any HTTP server that can serve YAML and tar files and is able to handle GET requests can be a chart repository. Because of that a wide range of options are available when it comes down to hosting your own chart repository, e.g. Google Cloud Storage, Amazon S3, Github Pages, or your own web server. The structure of a chart repository `https://example.com/charts` might look like this:
+
+```
+charts/
+  |
+  |- index.yaml
+  |
+  |- mychart-0.1.0.tgz
+  |
+  |- mychart-0.1.0.tgz.prov
+```
+`.prov` files, or provenance files help chart users verify the integrity and origin of a package.
+
+### Hosting via Github Pages
+GitHub allows you to serve static web pages in two different ways:
+
+* By configuring a project to serve the contents of its docs/ directory
+* By configuring a project to serve a particular branch
+
+We'll describe the first approach. Assuming that you have Helm installed, we'll first start off by creating and publishing a chart.
+
+```
+$ helm create mychart
+$ helm package mychart
+$ mkdir docs
+$ mv mychart-0.1.0.tgz docs
+$ helm repo index docs --url https://kulcsphu.github.io/helmchartsrepo
+$ git add -i
+$ git commit -av
+$ git push origin main
+```
+
+In the repository settings under the Github Pages section, select the `/docs` folder in the main branch. Check that Enforce HTTPS is ticked, so the HTTPS will be used when charts are served. Finally, you can add the repository to your list with `helm repo add my-repo https://kulcsphu.github.io/helmchartsrepo` and then download charts with `helm pull my-repo/mychart`.
+
 # General Structure of the fleet repo
  
 -  clusters/stage/flux-system/      generated Directory of the flux system by the bootstrapping process
@@ -139,7 +174,7 @@ ArgoCD and Flux both have the possibility to generate manifests, but ArgoCD incl
 ## Updating container images
 Where Flux shines is updating the container images automatically. This way, less critical containers can be updated to revision versions, without doing it manually. In ArgoCD the changes have to be committed to the git repository in order to update the container image.
 
-## Argo FLux
+## Argo Flux
 Recently both tools joined together. They want to provide a single and best-in-class tool-chain for GitOps as well as a global-scale reference architecture for GitOps. The engineering resources to address issues and feature requests is doubled. The main advantage is the new Argo Flux dashboard joining the advantages of both tools. This way workflows and events will be used that leverage the beneficial features of Argo CD and Flux CD.
 <br>In the process of merging the tools, the GitOps Engine will be created. It is used to share common components and provide backwards-compatibility for both Argo CD and Flux CD. It will manage the access to git repositories, Kubernetes resource caches, manifest generation, resource reconciliation and sync planning.
 
